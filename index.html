@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="CSS/style.css">
+    <link rel="stylesheet" type="text/css" href="CSS/style.css" />
     <title>Assignment 2: Single-Page App in JavaScript</title>
+
+    <link href="./src/css/output.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -19,8 +21,7 @@
     </nav>
 
     <main>
-      <div id="mainContent">
-      </div>
+      <div id="mainContent"></div>
 
       <div class="cart-panel">
         <div class="cart-header">
@@ -29,30 +30,31 @@
         </div>
         <div class="cart-items" id="cartItems">
           <div class="empty-cart">Your cart is empty</div>
-
         </div>
         <div class="cart-total">
           <div class="total-amount" id="totalAmount">$0.00</div>
-          <button class="checkout-btn" id="checkoutBtn" disabled>Checkout</button>
-          <button class="clear-cart-btn" id="clearcartBtn" disabled>Clear Cart</button>
+          <button class="checkout-btn" id="checkoutBtn" disabled>
+            Checkout
+          </button>
+          <button class="clear-cart-btn" id="clearcartBtn" disabled>
+            Clear Cart
+          </button>
         </div>
       </div>
     </main>
-    
-          <template class="products-template">
-            <div class="product-card">
-              <div class="product-img"></div>
-              <div class="product-name"></div>
-              <div class="product-description"></div>
-              <div class="product-price"></div>
-              <button class="add-to-cart-btn" data-id="" data-name=""></button>
-              <button class="remove-from-cart-btn" data-id="" data-name=""></button>
-            </div>
-          </template>
 
-    <aside>
+    <template class="products-template">
+      <div class="product-card">
+        <div class="product-img"></div>
+        <div class="product-name"></div>
+        <div class="product-description"></div>
+        <div class="product-price"></div>
+        <button class="add-to-cart-btn" data-id="" data-name=""></button>
+        <button class="remove-from-cart-btn" data-id="" data-name=""></button>
+      </div>
+    </template>
 
-    </aside>
+    <aside></aside>
 
     <script src="script.js"></script>
 

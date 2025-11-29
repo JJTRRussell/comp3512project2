@@ -1,27 +1,48 @@
-const content = document.getElementById('mainContent');
 
-mainContent.innerHTML = "";
+document.addEventListener("DOMContentLoaded", () => {
+    const content = document.querySelector("#mainContent");
 
-const webPages = {
-    home: `<h2>This page is currently under construction...</h2>`,
-    browse: `<h2>Browse</h2>
-                <h3>This page is currently under construction...</h3>`,
-    about: `<h2>About us</h2>
-            <h3>This page is currently under construction...</h3>`
-};
+    const webPages = {
+        home: homePage,
+        browse: browsePage,
+        about: aboutPage
+    };
 
-function loadWebPage(webPage) {
-    mainContent.innerHTML = webPages[webPage] || webPages.home;
-}
+    // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/?utm_source=chatgpt.com
+    function loadWebPage() {
+        const page = window.location.hash.substring(1) || "home";
 
-window.addEventListener('hashchange', () => {
-    const page = window.location.hash.substring(1);
-    loadWebPage(page);
+        if (webPages[page]) {
+            webPages[page]();
+        } else {
+            homePage();
+        }
+    }
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event
+    window.addEventListener("hashchange", loadWebPage);
+
+    loadWebPage();
+
+    function homePage() {
+        mainContent.innerHTML = `
+        <h2>Home</h2>
+        <h3>Robinson-Russell & Swan Outfitters</h3>
+        <p>This page is under construction...</p>;
+        `;
+    }
+
+    function browsePage() {
+        mainContent.innerHTML = `
+        <h2>Browse Products</h2>
+        <p>This page is under construction...</p>
+        `;
+    }
+
+    function aboutPage() {
+        mainContent.innerHTML = `
+        <h2>About Us</h2>
+        <p>This page is under construction...</p>
+        `;
+    }
 });
-
-if (window.location.has === '') {
-    loadWebPage('home');
-} else {
-    const page = window.location.hash.substring(1);
-    loadWebPage(page);
-}

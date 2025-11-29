@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
         about: aboutPage
     };
 
-    // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/?utm_source=chatgpt.com
+    // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/
     function loadWebPage() {
         const page = window.location.hash.substring(1) || "home";
 
@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadWebPage();
 
+
+
     function homePage() {
         mainContent.innerHTML = `
         <h2>Home</h2>
@@ -37,6 +39,15 @@ document.addEventListener("DOMContentLoaded", () => {
         <h2>Browse Products</h2>
         <p>This page is under construction...</p>
         `;
+
+        const clothingAPI = "./data-pretty.json";
+
+        fetch(clothingAPI)
+            .then(response => response.json())
+            .then( data => {
+                console.log(data);
+            })
+            .catch(error => console.error(error));
     }
 
     function aboutPage() {

@@ -35,19 +35,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function browsePage() {
-        mainContent.innerHTML = `
-        <h2>Browse Products</h2>
-        <p>This page is under construction...</p>
-        `;
-
         const clothingAPI = "./data-pretty.json";
 
         fetch(clothingAPI)
             .then(response => response.json())
             .then( data => {
                 console.log(data);
+                displayProducts(data);
             })
             .catch(error => console.error(error));
+
+        function displayProducts(products) {
+            const productsGrid = document.querySelector(".products-grid");
+            const template = document.querySelector(".products-template");
+
+            productsGrid.innerHTML = "";
+
+            for (let p of products) {
+                const clone = template.content.cloneNode(true);
+                const name = clone.querySelector(".product-name");
+                name.textContent = p.name;
+                name.value = p.id;
+                const description = clone.querySelector(".product-description");
+                description.textContent = p.description;
+                const price = clone.querySelector(".product-price");
+                price.textContent = p.price;
+                price.value = p.price;
+                const btn = clone.querySelector(".add-to-cart-btn");
+                btn.textContent = "Add to Cart";
+                btn.dataset.id = p.id;
+                btn.dataset.name = p.name;
+
+                productsGrid.appendChild(clone);
+            }
+        }
     }
 
     function aboutPage() {

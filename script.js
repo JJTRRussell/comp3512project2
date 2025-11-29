@@ -1,6 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     const content = document.querySelector("#mainContent");
+    let productsCache = null;
 
     const webPages = {
         home: homePage,
@@ -10,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/
     function loadWebPage() {
-        const page = window.location.hash.substring(1) || "home";
+        const page = window.location.hash.substring(1) || "homePage";
 
         if (webPages[page]) {
             webPages[page]();
@@ -21,37 +22,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event
     window.addEventListener("hashchange", loadWebPage);
-
     loadWebPage();
 
-
-
     function homePage() {
-        mainContent.innerHTML = `
-        <h2>Home</h2>
-        <h3>Robinson-Russell & Swan Outfitters</h3>
-        <p>This page is under construction...</p>;
+        content.innerHTML = `
+            <h2>Home</h2>
         `;
     }
 
     function browsePage() {
         const clothingAPI = "./data-pretty.json";
 
-        fetch(clothingAPI)
-            .then(response => response.json())
-            .then( data => {
-                console.log(data);
-                displayProducts(data);
-            })
-            .catch(error => console.error(error));
+        content.innerHTML = `
+            <h2>Browse Products</h2>
+            <div class="products-grid"></div>
+        `;
 
-        function displayProducts(products) {
-            const productsGrid = document.querySelector(".products-grid");
+        const productsGrid = document.querySelector(".products-grid");
+
+        if (productsCache) {
+            displayProducts(productsCache, productsGrid);
+            //console.log(productsCache);
+        } else {
+            fetch(clothingAPI)
+                .then(response => response.json())
+                .then( data => {
+                    productsCache = data;
+                    //console.log(data);
+                    displayProducts(data, productsGrid);
+                })
+                .catch(error => console.error(error));
+        }
+
+        function displayProducts(products, grid) {
+            grid.innerHTML = "";
             const template = document.querySelector(".products-template");
 
-            productsGrid.innerHTML = "";
-
             for (let p of products) {
+
                 const clone = template.content.cloneNode(true);
                 const name = clone.querySelector(".product-name");
                 name.textContent = p.name;
@@ -66,15 +74,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.dataset.id = p.id;
                 btn.dataset.name = p.name;
 
-                productsGrid.appendChild(clone);
+                grid.appendChild(clone);
             }
         }
     }
 
     function aboutPage() {
-        mainContent.innerHTML = `
-        <h2>About Us</h2>
-        <p>This page is under construction...</p>
+        content.innerHTML = `
+            <h2>Home</h2>
         `;
     }
 });

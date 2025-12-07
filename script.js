@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
         {name: "Category (A-Z)", iso: "CAAZ"},
         {name: "Category (Z-A)", iso: "CAZA"}
     ];
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
     const sorts = {
         PNAZ: (a, b) => a.name.localeCompare(b.name),
         PNZA: (a, b) => b.name.localeCompare(a.name),
@@ -100,8 +102,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.textContent = "Add to Cart";
                 btn2.textContent = "Remove from Cart";
                 btn.dataset.id = p.id;
+                btn2.dataset.id = p.id;
                 btn.dataset.name = p.name;
+                btn2.dataset.name = p.name;
                 btn.dataset.price = p.price;
+                btn2.dataset.price = p.price;
                 grid.appendChild(clone);
             }
             addItemToCartButtonEvent();
@@ -158,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!productsCache) return;
 
                 const selected = filterSelect.value;
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
                 let sorted = [...productsCache];
 
                 if (sorts[selected]) {

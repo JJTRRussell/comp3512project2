@@ -1,6 +1,22 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    const filters = [
+        {name: "Product Name (A-Z)", iso: "PNAZ"},
+        {name: "Product Name (Z-A)", iso: "PNZA"},
+        {name: "Price ($$$-$)", iso: "PGTL"},
+        {name: "Price ($-$$$)", iso: "PLTG"},
+        {name: "Category (A-Z)", iso: "CAAZ"},
+        {name: "Category (Z-A)", iso: "CAZA"}
+    ];
+    const sorts = {
+        PNAZ: (a, b) => a.name.localeCompare(b.name),
+        PNZA: (a, b) => b.name.localeCompare(a.name),
+        PGTL: (a, b) => b.price - a.price,
+        PLTG: (a, b) => a.price - b.price,
+        CAAZ: (a, b) => a.category.localeCompare(b.category),
+        CAZA: (a, b) => b.category.localeCompare(a.category)
+    };
     const content = document.querySelector("#mainContent");
     const template = document.querySelector(".products-template");
     let productsCache = null;
@@ -43,20 +59,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         content.innerHTML = `
             <h2>Browse Products</h2>
+            <h3>Filter Type</h3>
+            <select id="filterName"></select>
             <div class="products-grid"></div>
         `;
 
         const productsGrid = document.querySelector(".products-grid");
+        const filterSelect = document.querySelector("#filterName");
+        filterOptions(filters);
+        filterTypeSelectEvent();
 
         if (productsCache) {
             displayProducts(productsCache, productsGrid);
-            //console.log(productsCache);
         } else {
             fetch(clothingAPI)
                 .then(response => response.json())
                 .then( data => {
                     productsCache = data;
-                    //console.log(data);
                     displayProducts(data, productsGrid);
                 })
                 .catch(error => console.error(error));
@@ -64,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function displayProducts(products, grid) {
             grid.innerHTML = "";
-            //const template = document.querySelector(".products-template");
 
             for (let p of products) {
 
@@ -89,6 +107,21 @@ document.addEventListener("DOMContentLoaded", () => {
             addItemToCartButtonEvent();
             removeItemFromCartButtonEvent();
             clearCartButtonEvent();
+        }
+
+        function filterOptions(filterList) {
+            const list = document.querySelector("#filterName");
+            list.replaceChildren();
+            const blank = document.createElement("option");
+            blank.textContent = "Select a Filter";
+            blank.value = "";
+            list.appendChild(blank);
+            for (let f of filterList){
+                const option = document.createElement('option');
+                option.textContent = f.name;
+                option.value = f.iso;
+                list.appendChild(option);
+            }
         }
 
         function cartItem(id, name, price, quantity){
@@ -119,6 +152,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        function filterTypeSelectEvent() {
+            filterSelect.addEventListener('change', () => {
+
+                if (!productsCache) return;
+
+                const selected = filterSelect.value;
+                let sorted = [...productsCache];
+
+                if (sorts[selected]) {
+                    sorted.sort(sorts[selected]);
+                }
+                displayProducts(sorted, productsGrid);
+            });
+
+        }
+
         function cartClickHandler(e) {
             const btn = e.target;
             const id = btn.dataset.id;
@@ -145,8 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (exists) {
                 exists.quantity--;
-            }else {
-                globalArray.pop(id, name, price, 1);
+                if (exists.quantity <= 0) {
+                    globalArray = globalArray.filter(i => i.id !== id);
+                }
             }
             updateCart();
         }

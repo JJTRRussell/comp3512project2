@@ -1,6 +1,19 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    const images = {
+        "accessories": "./images/accessories.jpg",
+        "bottoms": "./images/pants2.jpg",
+        "dresses": "./images/dresses.jpg",
+        "intimates": "./images/underwear2.jpg",
+        "jumpsuits": "./images/jumpsuit.jpg",
+        "loungewear": "./images/loungwear2.jpg",
+        "outerwear": "./images/outerwear.jpg",
+        "shoes": "./images/shoes.jpg",
+        "sweaters": "./images/sweater2.jpg",
+        "swimwear": "./images/swimwear.jpg",
+        "tops": "./images/shirts.jpg"
+    };
     const sorting = [
         {name: "Product Name (A-Z)", iso: "PNAZ"},
         {name: "Product Name (Z-A)", iso: "PNZA"},
@@ -54,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML = `
             <h2>Home</h2>
         `;
-        
+
         const aside = document.querySelector(".department-Panel");
         if (aside) {
             aside.style.display = 'none';
@@ -98,6 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let p of products) {
                 
                 const clone = template.content.cloneNode(true);
+                const picture = clone.querySelector(".product-img");
+                const img = document.createElement("img");
+                const category = p.category.toLowerCase();
+                img.src = images[category];
+                img.alt = p.name;
+                picture.appendChild(img);
                 const name = clone.querySelector(".product-name");
                 name.textContent = p.name;
                 name.value = p.id;

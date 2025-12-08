@@ -1,16 +1,33 @@
-
+// This is the DOMContentLoaded event listener, ensuring nothing is done until the DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
+    // This object groups the clothing categories so specific pictures will load for them
+    const images = {
+        "accessories": "./images/accessories.jpg",
+        "bottoms": "./images/pants.jpg",
+        "dresses": "./images/dresses.jpg",
+        "intimates": "./images/underwear.jpg",
+        "jumpsuits": "./images/jumpsuit.jpg",
+        "loungewear": "./images/loungwear2.jpg",
+        "outerwear": "./images/outerwear.jpg",
+        "shoes": "./images/shoes.jpg",
+        "sweaters": "./images/sweaters2.jpg",
+        "swimwear": "./images/swimwear.jpg",
+        "tops": "./images/shirts2.jpg"
+    };
 
-    const filters = [
-        { name: "Product Name (A-Z)", iso: "PNAZ" },
-        { name: "Product Name (Z-A)", iso: "PNZA" },
-        { name: "Price ($$$-$)", iso: "PGTL" },
-        { name: "Price ($-$$$)", iso: "PLTG" },
-        { name: "Category (A-Z)", iso: "CAAZ" },
-        { name: "Category (Z-A)", iso: "CAZA" }
+    // This array lists the different sorting types that will be used
+    const sorting = [
+        {name: "Product Name (A-Z)", iso: "PNAZ"},
+        {name: "Product Name (Z-A)", iso: "PNZA"},
+        {name: "Price ($$$-$)", iso: "PGTL"},
+        {name: "Price ($-$$$)", iso: "PLTG"},
+        {name: "Category (A-Z)", iso: "CAAZ"},
+        {name: "Category (Z-A)", iso: "CAZA"}
     ];
+
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+    // This object organizes and stores the different sorting functions that will be called on when selected
     const sorts = {
         PNAZ: (a, b) => a.name.localeCompare(b.name),
         PNZA: (a, b) => b.name.localeCompare(a.name),
@@ -19,6 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
         CAAZ: (a, b) => a.category.localeCompare(b.category),
         CAZA: (a, b) => b.category.localeCompare(a.category)
     };
+
+    // The main variables which will be referenced globally
     const content = document.querySelector("#mainContent");
     const template = document.querySelector(".products-template");
     let productsCache = null;
@@ -27,8 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartValueAmount = document.querySelector(".total-amount");
     const cartDiv = document.querySelector(".cart-items");
 
-
-
+    // This object organizes and stores the different pages that the user can switch between
     const webPages = {
         home: homePage,
         browse: browsePage,
@@ -37,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/
+    // This is the website router which switches between the different views based on which URL hash address is clicked
     function loadWebPage() {
         let page = window.location.hash.substring(1);
 
@@ -51,30 +70,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event
+    // This event listener is what looks out for a change in the URL hash link
     window.addEventListener("hashchange", loadWebPage);
     loadWebPage();
 
+    // The home page view
     function homePage() {
         content.innerHTML = `
             <h2>Home</h2>
         `;
+
+        const aside = document.querySelector(".department-Panel");
+        if (aside) {
+            aside.style.display = 'none';
+        }
     }
 
+    // The browse page view
     function browsePage() {
         const clothingAPI = "./data-pretty.json";
 
         content.innerHTML = `
             <h2>Browse Products</h2>
-            <h3>Filter Type</h3>
-            <select id="filterName"></select>
+            <h3>Sort Type</h3>
+            <select id="sortType"></select>
             <div class="products-grid"></div>
         `;
-
-        const contentWindow = document.querySelector(".products-grid");
-        const filterSelect = document.querySelector("#filterName");
-        filterOptions(filters);
+        const aside = document.querySelector(".department-Panel");
+        if (aside) {
+            aside.style.display = 'block';
+        }
+        const productsGrid = document.querySelector(".products-grid");
+        const sortingSelect = document.querySelector("#sortType");
+        sortOptions(sorting);
+        sortTypeSelectEvent();
         filterTypeSelectEvent();
 
+        // This is the fetch call, it first looks for a saved cache, if none exists then it fetches the API data
         if (productsCache) {
             displayProducts(productsCache, contentWindow);
         } else {
@@ -87,12 +119,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 .catch(error => console.error(error));
         }
 
+        // This function is where each product will be rendered and displayed using a template
         function displayProducts(products, grid) {
             grid.innerHTML = "";
 
             for (let p of products) {
-
+                
                 const clone = template.content.cloneNode(true);
+                const picture = clone.querySelector(".product-img");
+                const img = document.createElement("img");
+                const category = p.category.toLowerCase();
+                img.src = images[category];
+                img.alt = p.name;
+                picture.appendChild(img);
                 const name = clone.querySelector(".product-name");
                 name.textContent = p.name;
                 name.value = p.id;
@@ -118,28 +157,31 @@ document.addEventListener("DOMContentLoaded", () => {
             clearCartButtonEvent();
         }
 
-        function filterOptions(filterList) {
-            const list = document.querySelector("#filterName");
+        // This function creates a sort drop down list to sort the products in various ways
+        function sortOptions(sortList) {
+            const list = document.querySelector("#sortType");
             list.replaceChildren();
             const blank = document.createElement("option");
-            blank.textContent = "Select a Filter";
+            blank.textContent = "Select a Sort Type";
             blank.value = "";
             list.appendChild(blank);
-            for (let f of filterList) {
+            for (let s of sortList){
                 const option = document.createElement('option');
-                option.textContent = f.name;
-                option.value = f.iso;
+                option.textContent = s.name;
+                option.value = s.iso;
                 list.appendChild(option);
             }
         }
 
-        function cartItem(id, name, price, quantity) {
+        // This function allows the creation of new items to go into the cart
+        function cartItem(id, name, price, quantity){
             this.id = id;
             this.name = name;
             this.price = price;
             this.quantity = quantity;
         }
 
+        // This event listener watches for an item to be added to the cart
         function addItemToCartButtonEvent() {
             const buttons = document.querySelectorAll(".add-to-cart-btn");
             for (let btn of buttons) {
@@ -147,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // This event listener watches for an item to be removed form the cart
         function removeItemFromCartButtonEvent() {
             const buttons = document.querySelectorAll(".remove-from-cart-btn");
             for (let btn of buttons) {
@@ -154,6 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // This event listener watches for all items to be cleared from the cart
         function clearCartButtonEvent() {
             const buttons = document.querySelectorAll(".clear-cart-btn");
             for (let btn of buttons) {
@@ -161,12 +205,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        function filterTypeSelectEvent() {
-            filterSelect.addEventListener('change', () => {
+        // This function first watches for a sort to be selected, then checks if it exists in cache, then gets
+        // the ISO sort code, then creates an expanded copy of the products array, then it sorts the array copy 
+        // based on the sort that was selected, finally it renders and displays the new sorted products list
+        function sortTypeSelectEvent() {
+            sortingSelect.addEventListener('change', () => {
 
                 if (!productsCache) return;
 
-                const selected = filterSelect.value;
+                const selected = sortingSelect.value;
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
                 let sorted = [...productsCache];
 
@@ -178,6 +225,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
+        // This event listener watches for any filter type being selected and then re-renders the products list
+        // and displays the new filtered list
+        function filterTypeSelectEvent() {
+            document.querySelectorAll(".filter-gender, .filter-category, .filter-size, .filter-colour").forEach(p => {
+                p.addEventListener('change', () => {
+                    const filters = selectedFilters();
+                    const filtered = filteredProducts(productsCache, filters);
+                    displayProducts(filtered, productsGrid);
+                });
+            });
+        }
+
+        // This function allows the user to add an item to the cart, it checks to see if it was already selected,
+        // otherwise adds the new item to the cart
         function addToCart(e) {
             const btn = e.target;
             const id = btn.dataset.id;
@@ -194,6 +255,8 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCart();
         }
 
+        // This function allows the user to remove an item from the cart, it checks to see if its already in the cart,
+        // otherwise it removes the item from the cart
         function removeFromCart(e) {
             const btn = e.target;
             const id = btn.dataset.id;
@@ -211,11 +274,15 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCart();
         }
 
+        // This function removes all items from the cart
         function clearCart() {
             shoppingCart.length = 0;
             updateCart();
         }
 
+        // This function re-renders and displays the products cart if an item was added or removed,
+        // it first checks if there is nothing, if there is something then re-displays the products
+        // that were changed
         function updateCart() {
             cartDiv.innerHTML = "";
 
@@ -257,12 +324,63 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("#clearcartBtn").disabled = false;
         }
 
+        // This function first finds all checkboxes that are checked in a Nodelist, then converts it into an
+        // array so the map function can be used to check the value of what checkbox was checked, then returns
+        // an object containing what was checked so the filteredProducts function can use it
+        function selectedFilters() {
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
+            // https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:checked
+            const genders = Array.from(document.querySelectorAll(".filter-gender:checked")).map(p => p.value);
+            const categories = Array.from(document.querySelectorAll(".filter-category:checked")).map(p => p.value);
+            const sizes = Array.from(document.querySelectorAll(".filter-size:checked")).map(p => p.value);
+            const colours = Array.from(document.querySelectorAll(".filter-colour:checked")).map(p => p.value);
+            
+            return {genders, categories, sizes, colours};
+        }
+
+        // This function takes the product list and applies the checkbox filters that were selected using filter() to return 
+        // only those products which match the chosen filters, if nothing was chosen then that particular filter 
+        // returns false and is skipped
+        function filteredProducts(products, filters) {
+            return products.filter(p => {
+                const gender = p.gender.toLowerCase();
+                const category = p.category.toLowerCase();
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+                if (filters.genders.length > 0 && !filters.genders.includes(gender))
+                    return false;
+                if (filters.categories.length > 0 && !filters.categories.includes(category))
+                    return false;
+                // Because sizes and colours have many different choices, the some() function is used to check if
+                // the product list has any of the sizes or colours the user has chosen
+                if (filters.sizes.length > 0) {
+                    const tempSizes = p.sizes.map(s => s.toLowerCase());
+                    if (!tempSizes.some(size => filters.sizes.includes(size)))
+                        return false;
+                }
+                if (filters.colours.length > 0) {
+                    const tempColours = p.color.map(c => c.name.toLowerCase());
+                    if (!tempColours.some(colour => filters.colours.includes(colour)))
+                        return false;
+                }
+
+                return true;
+            });
+        }
     }
 
+    // The about page view
     function aboutPage() {
-        content.innerHTML = `<h2> About Us</h2> `;
+        content.innerHTML = `
+            <h2>About Us</h2>
+        `;
+        
+        const aside = document.querySelector(".department-Panel");
+        if (aside) {
+            aside.style.display = 'none';
+        }
     }
-
+  
     function cartPage() {
 
         const contentWindow = document.querySelector("#mainContent");

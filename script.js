@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = document.querySelector("#mainContent");
     const template = document.querySelector(".products-template");
     let productsCache = null;
-    let globalArray = [];
+    let shoppingCart = [];
     const cartItemCount = document.querySelector(".cart-count");
     const cartValueAmount = document.querySelector(".total-amount");
     const cartDiv = document.querySelector(".cart-items");
@@ -50,7 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const webPages = {
         home: homePage,
         browse: browsePage,
-        about: aboutPage
+        about: aboutPage,
+        cart: cartPage
     };
 
     // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/
@@ -65,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             homePage();
         }
+        toggleCartPanel();
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event
@@ -106,13 +108,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // This is the fetch call, it first looks for a saved cache, if none exists then it fetches the API data
         if (productsCache) {
-            displayProducts(productsCache, productsGrid);
+            displayProducts(productsCache, contentWindow);
         } else {
             fetch(clothingAPI)
                 .then(response => response.json())
-                .then( data => {
+                .then(data => {
                     productsCache = data;
-                    displayProducts(data, productsGrid);
+                    displayProducts(data, contentWindow);
                 })
                 .catch(error => console.error(error));
         }
@@ -182,24 +184,24 @@ document.addEventListener("DOMContentLoaded", () => {
         // This event listener watches for an item to be added to the cart
         function addItemToCartButtonEvent() {
             const buttons = document.querySelectorAll(".add-to-cart-btn");
-            for (let btn of buttons){
-                btn.addEventListener("click", cartClickHandler);
+            for (let btn of buttons) {
+                btn.addEventListener("click", addToCart);
             }
         }
 
         // This event listener watches for an item to be removed form the cart
         function removeItemFromCartButtonEvent() {
             const buttons = document.querySelectorAll(".remove-from-cart-btn");
-            for (let btn of buttons){
-                btn.addEventListener("click", cartClickHandler2);
+            for (let btn of buttons) {
+                btn.addEventListener("click", removeFromCart);
             }
         }
 
         // This event listener watches for all items to be cleared from the cart
         function clearCartButtonEvent() {
             const buttons = document.querySelectorAll(".clear-cart-btn");
-            for (let btn of buttons){
-                btn.addEventListener("click", cartClickHandler3);
+            for (let btn of buttons) {
+                btn.addEventListener("click", clearCart);
             }
         }
 
@@ -218,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (sorts[selected]) {
                     sorted.sort(sorts[selected]);
                 }
-                displayProducts(sorted, productsGrid);
+                displayProducts(sorted, contentWindow);
             });
 
         }
@@ -237,44 +239,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // This function allows the user to add an item to the cart, it checks to see if it was already selected,
         // otherwise adds the new item to the cart
-        function cartClickHandler(e) {
+        function addToCart(e) {
             const btn = e.target;
             const id = btn.dataset.id;
             const name = btn.dataset.name;
             const price = Number(btn.dataset.price);
 
-            let exists = globalArray.find(item => item.id === id);
+            let exists = shoppingCart.find(item => item.id === id);
 
             if (exists) {
                 exists.quantity++;
-            }else {
-                globalArray.push(new cartItem(id, name, price, 1));
+            } else {
+                shoppingCart.push(new cartItem(id, name, price, 1));
             }
             updateCart();
         }
 
         // This function allows the user to remove an item from the cart, it checks to see if its already in the cart,
         // otherwise it removes the item from the cart
-        function cartClickHandler2(e) {
+        function removeFromCart(e) {
             const btn = e.target;
             const id = btn.dataset.id;
             const name = btn.dataset.name;
             const price = Number(btn.dataset.price);
 
-            let exists = globalArray.find(item => item.id === id);
+            let exists = shoppingCart.find(item => item.id === id);
 
             if (exists) {
                 exists.quantity--;
                 if (exists.quantity <= 0) {
-                    globalArray = globalArray.filter(i => i.id !== id);
+                    shoppingCart = shoppingCart.filter(i => i.id !== id);
                 }
             }
             updateCart();
         }
 
         // This function removes all items from the cart
-        function cartClickHandler3() {
-            globalArray.length = 0;
+        function clearCart() {
+            shoppingCart.length = 0;
             updateCart();
         }
 
@@ -284,9 +286,10 @@ document.addEventListener("DOMContentLoaded", () => {
         function updateCart() {
             cartDiv.innerHTML = "";
 
-            if (globalArray.length === 0) {
+            if (shoppingCart.length === 0) {
                 cartDiv.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
                 cartItemCount.textContent = "0";
+                document.querySelector(".total-cart-items").textContent = 0;
                 cartValueAmount.textContent = "$0.00";
                 document.querySelector("#checkoutBtn").disabled = true;
                 document.querySelector("#clearcartBtn").disabled = true;
@@ -296,25 +299,27 @@ document.addEventListener("DOMContentLoaded", () => {
             let totalPrice = 0;
             let totalCount = 0;
 
-            for (let glo of globalArray) {
+            for (let item of shoppingCart) {
                 const div2 = document.createElement("div");
                 div2.classList.add("cart-item");
 
                 div2.innerHTML = `
                     <div class="item-info">
-                        <p class="item-name">${glo.name} x ${glo.quantity}</p>
-                        <p class='item-price">$${(glo.price * glo.quantity).toFixed(2)}</p>
-                    </div>
-                `;
+                        <p class="item-name"> ${item.name} x ${item.quantity})</p>
+                        <p class='item-price">
+                            $${item.price * item.quantity.toFixed(2)}
+                        </p>
+                    </div>`;
 
                 cartDiv.appendChild(div2);
 
-                totalPrice += glo.price * glo.quantity;
-                totalCount += glo.quantity;
+                totalPrice += item.price * item.quantity;
+                totalCount += item.quantity;
             }
 
             cartItemCount.textContent = totalCount;
-            cartValueAmount.textContent = `$${totalPrice.toFixed(2)}`;
+            document.querySelector(".total-cart-items").textContent = totalCount;
+            cartValueAmount.textContent = `$${totalPrice.toFixed(2)} `;
             document.querySelector("#checkoutBtn").disabled = false;
             document.querySelector("#clearcartBtn").disabled = false;
         }
@@ -374,5 +379,91 @@ document.addEventListener("DOMContentLoaded", () => {
         if (aside) {
             aside.style.display = 'none';
         }
+    }
+  
+    function cartPage() {
+
+        const contentWindow = document.querySelector("#mainContent");
+        const cartPanel = document.querySelector(".cart-panel");
+
+        // clear content window
+        contentWindow.innerHTML = '';
+
+        // Resize Cotent Window
+        contentWindow.classList.replace("col-span-5", "col-span-4");
+
+        // Generate new Cart Panel
+        cartPanel.replaceChildren(generateCartPanel());
+
+        // Generate new Cart List Panel
+        contentWindow.replaceChildren(generateCartProductList());
+    }
+
+    function toggleCartPanel() {
+        const cartPanelView = document.querySelector(".cart-panel");
+
+        let hash = window.location.hash.slice(1)
+
+        if (hash == "cart") {
+            cartPanelView.classList.remove("hidden");
+        } else {
+            cartPanelView.classList.add("hidden");
+        }
+    }
+
+    function generateCartPanel() {
+        // Select Cart Panel
+        const cartPanelView = document.querySelector(".cart-panel");
+        cartPanelView.innerHTML = "";
+
+        // Create Order Summary inpsired by Default Flowbite Shopping Cart
+        // https://flowbite.com/blocks/e-commerce/shopping-cart/
+        const template = document.querySelector(".order-summary-template");
+        const newSummary = template.content.cloneNode(true);
+
+        // Generate cart totals
+        const totalPrice = calculateTotalCartPrice();
+
+        // Alberta Tax
+        // Should be replaced by better functionality later on
+        const albertaTax = 0.05;
+
+        let totalTax = totalPrice * albertaTax;
+
+        newSummary.querySelector("#cart-total-amount").textContent = `$${totalPrice}`;
+
+        newSummary.querySelector("#tax-amount").textContent = `$${totalTax.toFixed(2)}`;
+
+        newSummary.querySelector("#cart-final-price").textContent =
+            `$${(Number(totalPrice) + Number(totalTax)).toFixed(2)}`
+
+        return newSummary;
+    }
+
+    function calculateTotalCartPrice() {
+        let cartTotalPrice = 0;
+
+        if (shoppingCart.length > 0) {
+            for (let item of shoppingCart) {
+                cartTotalPrice += item.price * item.quantity;
+            }
+        }
+
+        return cartTotalPrice.toFixed(2);
+    }
+    function generateCartProductList() {
+
+        const itemTemplate = document.querySelector(".cart-item-template");
+        const newItem = itemTemplate.content.cloneNode(true);
+
+        // Empty Cart Check
+        if (shoppingCart.length == 0) {
+            newItem.querySelector(".cart-item").innerHTML = `
+                <div class="empty-cart-msg text-center">
+                <p>Your Cart is Empty.</p>
+                </div>`;
+        }
+
+        return newItem
     }
 });

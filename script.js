@@ -1,7 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const filters = [
+    const sorting = [
         {name: "Product Name (A-Z)", iso: "PNAZ"},
         {name: "Product Name (Z-A)", iso: "PNZA"},
         {name: "Price ($$$-$)", iso: "PGTL"},
@@ -54,6 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML = `
             <h2>Home</h2>
         `;
+        
+        const aside = document.querySelector(".department-Panel");
+        if (aside) {
+            aside.style.display = 'none';
+        }
     }
 
     function browsePage() {
@@ -61,14 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         content.innerHTML = `
             <h2>Browse Products</h2>
-            <h3>Filter Type</h3>
+            <h3>Sort Type</h3>
             <select id="filterName"></select>
             <div class="products-grid"></div>
         `;
-
+        const aside = document.querySelector(".department-Panel");
+        if (aside) {
+            aside.style.display = 'block';
+        }
         const productsGrid = document.querySelector(".products-grid");
-        const filterSelect = document.querySelector("#filterName");
-        filterOptions(filters);
+        const sortingSelect = document.querySelector("#filterName");
+        sortOptions(sorting);
+        sortTypeSelectEvent();
         filterTypeSelectEvent();
 
         if (productsCache) {
@@ -87,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.innerHTML = "";
 
             for (let p of products) {
-
+                
                 const clone = template.content.cloneNode(true);
                 const name = clone.querySelector(".product-name");
                 name.textContent = p.name;
@@ -114,17 +123,17 @@ document.addEventListener("DOMContentLoaded", () => {
             clearCartButtonEvent();
         }
 
-        function filterOptions(filterList) {
+        function sortOptions(sortList) {
             const list = document.querySelector("#filterName");
             list.replaceChildren();
             const blank = document.createElement("option");
-            blank.textContent = "Select a Filter";
+            blank.textContent = "Select a Sort Type";
             blank.value = "";
             list.appendChild(blank);
-            for (let f of filterList){
+            for (let s of sortList){
                 const option = document.createElement('option');
-                option.textContent = f.name;
-                option.value = f.iso;
+                option.textContent = s.name;
+                option.value = s.iso;
                 list.appendChild(option);
             }
         }
@@ -157,12 +166,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        function filterTypeSelectEvent() {
-            filterSelect.addEventListener('change', () => {
+        function sortTypeSelectEvent() {
+            sortingSelect.addEventListener('change', () => {
 
                 if (!productsCache) return;
 
-                const selected = filterSelect.value;
+                const selected = sortingSelect.value;
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
                 let sorted = [...productsCache];
 
@@ -172,6 +181,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 displayProducts(sorted, productsGrid);
             });
 
+        }
+
+        function filterTypeSelectEvent() {
+            document.querySelectorAll(".filter-gender, .filter-category, .filter-size, .filter-colour").forEach(p => {
+                p.addEventListener('change', () => {
+                    const filters = selectedFilters();
+                    const filtered = filteredProducts(productsCache, filters);
+                    displayProducts(filtered, productsGrid);
+                });
+            });
         }
 
         function cartClickHandler(e) {
@@ -249,11 +268,55 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("#checkoutBtn").disabled = false;
             document.querySelector("#clearcartBtn").disabled = false;
         }
+
+        function selectedFilters() {
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
+            // https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:checked
+            const genders = Array.from(document.querySelectorAll(".filter-gender:checked")).map(p => p.value);
+            const categories = Array.from(document.querySelectorAll(".filter-category:checked")).map(p => p.value);
+            const sizes = Array.from(document.querySelectorAll(".filter-size:checked")).map(p => p.value);
+            const colours = Array.from(document.querySelectorAll(".filter-colour:checked")).map(p => p.value);
+            
+            return {genders, categories, sizes, colours};
+        }
+
+        function filteredProducts(products, filters) {
+            return products.filter(p => {
+                const gender = p.gender.toLowerCase();
+                const category = p.category.toLowerCase();
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+                if (filters.genders.length > 0 && !filters.genders.includes(gender))
+                    return false;
+                if (filters.categories.length > 0 && !filters.categories.includes(category))
+                    return false;
+                if (filters.sizes.length > 0) {
+                    const tempSizes = p.sizes.map(s => s.toLowerCase());
+                    if (!tempSizes.some(size => filters.sizes.includes(size)))
+                        return false;
+                }
+                if (filters.colours.length > 0) {
+                    const tempColours = p.color.map(c => c.name.toLowerCase());
+                    if (!tempColours.some(colour => filters.colours.includes(colour)))
+                        return false;
+                }
+
+                return true;
+            });
+        }
+
+
+
     }
 
     function aboutPage() {
         content.innerHTML = `
             <h2>About Us</h2>
         `;
+        
+        const aside = document.querySelector(".department-Panel");
+        if (aside) {
+            aside.style.display = 'none';
+        }
     }
 });

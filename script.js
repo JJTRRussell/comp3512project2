@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
             homePage();
         }
         toggleCartPanel();
+        toggleDepartmentPanel();
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event
@@ -79,11 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML = `
             <h2>Home</h2>
         `;
-
-        const aside = document.querySelector(".department-Panel");
-        if (aside) {
-            aside.style.display = 'none';
-        }
     }
 
     // The browse page view
@@ -96,10 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <select id="sortType"></select>
             <div class="products-grid"></div>
         `;
-        const aside = document.querySelector(".department-Panel");
-        if (aside) {
-            aside.style.display = 'block';
-        }
+
         const contentWindow = document.querySelector(".products-grid");
         const sortingSelect = document.querySelector("#sortType");
         sortOptions(sorting);
@@ -374,14 +367,11 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML = `
             <h2>About Us</h2>
         `;
-
-        const aside = document.querySelector(".department-Panel");
-        if (aside) {
-            aside.style.display = 'none';
-        }
     }
 
     function cartPage() {
+
+        toggleDepartmentPanel();
 
         const contentWindow = document.querySelector("#mainContent");
         const cartPanel = document.querySelector(".cart-panel");
@@ -406,6 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (hash == "cart") {
             cartPanelView.classList.remove("hidden");
+
         } else {
             cartPanelView.classList.add("hidden");
         }
@@ -465,5 +456,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return newItem
+    }
+
+    function toggleDepartmentPanel() {
+        const departmentPanelView = document.querySelector(".department-Panel");
+
+        let hash = window.location.hash.slice(1);
+
+        if (hash == "browse") {
+            departmentPanelView.style.display = "block";
+        } else {
+            departmentPanelView.style.display = "none";
+        }
+
     }
 });

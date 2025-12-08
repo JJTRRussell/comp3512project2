@@ -1,36 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="box-content">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="CSS/style.css" />
-    <title>Assignment 2: Single-Page App in JavaScript</title>
 
+    <link rel="stylesheet" type="text/css" href="CSS/style.css" />
+    <!-- Joe's Tailwind CSS setup via npm -->
     <link href="./src/css/output.css" rel="stylesheet" />
+
+    <title>Assignment 2: Single-Page App in JavaScript</title>
   </head>
 
-  <body>
-    <header>
-      <h1>Robinson-Russell & Swan Outfitters</h1>
+  <body class="grid grid-cols-7 gap-x-6">
+    <header class="col-span-full p-5 flex bg-white antialiased">
+      <h1 class="grow">Robinson-Russell & Swan Outfitters</h1>
+      <nav class="grow">
+        <ul class="flex justify-between">
+          <li><a href="#home" class="nav">Home</a></li>
+          <li><a href="#browse" class="nav">Browse</a></li>
+          <li><a href="#about" class="nav">About</a></li>
+          <li>
+            <a href="#cart" class="nav">
+              <span>Cart</span>
+              <span class="total-cart-items">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div id="header-cart"></div>
     </header>
 
-    <nav>
-      <a href="#home" class="nav">Home</a>
-      <a href="#browse" class="nav">Browse</a>
-      <a href="#about" class="nav">About</a>
-    </nav>
+    <main class="col-start-2 col-span-5 grid grid-cols-subgrid gap-4 container">
+      <div id="mainContent" class="col-span-5"></div>
 
-    <main>
-      <div id="mainContent"></div>
-
-      <div class="cart-panel">
+      <div class="cart-panel col-auto hidden">
         <div class="cart-header">
-          <h2>Cart</h2>
+          <h2>Order Summary</h2>
           <div class="cart-count" id="cartCount">0</div>
         </div>
+
         <div class="cart-items" id="cartItems">
           <div class="empty-cart">Your cart is empty</div>
         </div>
+
         <div class="cart-total">
           <div class="total-amount" id="totalAmount">$0.00</div>
           <button class="checkout-btn" id="checkoutBtn" disabled>
@@ -43,6 +55,12 @@
       </div>
     </main>
 
+    <footer class="col-span-full text-center h-12">
+      <div>© 2025 Brett Big Swan & Joe Robinson-Russell</div>
+    </footer>
+
+    <aside></aside>
+
     <template class="products-template">
       <div class="product-card">
         <div class="product-img"></div>
@@ -54,12 +72,47 @@
       </div>
     </template>
 
-    <aside></aside>
+    <template class="cart-item-template">
+      <section class="cart-item">
+        <div class="item-img"></div>
+        <div class="item-name"></div>
+        <div class="item-desc"></div>
+        <div class="item-price"></div>
+        <div class="item-count"><span>QTY: </span></div>
+        button
+      </section>
+    </template>
+
+    <template class="order-summary-template">
+      <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
+        <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+          <p class="text-xl font-semibold text-gray-900 dark:text-white">Order summary</p>
+
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <dl class="flex items-center justify-between gap-4">
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Original price</dt>
+                <dd id="cart-total-amount" class="text-base font-medium text-gray-900 dark:text-white">$0.00</dd>
+              </dl>
+
+              <dl class="flex items-center justify-between gap-4">
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Tax</dt>
+                <dd id="tax-amount" class="text-base font-medium text-gray-900 dark:text-white">$0.00</dd>
+              </dl>
+            </div>
+
+            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+              <dt class="text-base font-bold text-gray-900 dark:text-white">
+                Total
+              </dt>
+              <dd id="cart-final-price" class="text-base font-bold text-gray-900 dark:text-white">
+                $0.00
+              </dd>
+            </dl>            
+          </div> 
+          <a href="" class="flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 ">Proceed to Checkout</a>     
+    </template>
 
     <script src="script.js"></script>
-
-    <footer>
-      <div>© 2025 Brett Big Swan & Joe Robinson-Russell</div>
-    </footer>
   </body>
 </html>

@@ -17,12 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // This array lists the different sorting types that will be used
     const sorting = [
-        {name: "Product Name (A-Z)", iso: "PNAZ"},
-        {name: "Product Name (Z-A)", iso: "PNZA"},
-        {name: "Price ($$$-$)", iso: "PGTL"},
-        {name: "Price ($-$$$)", iso: "PLTG"},
-        {name: "Category (A-Z)", iso: "CAAZ"},
-        {name: "Category (Z-A)", iso: "CAZA"}
+        { name: "Product Name (A-Z)", iso: "PNAZ" },
+        { name: "Product Name (Z-A)", iso: "PNZA" },
+        { name: "Price ($$$-$)", iso: "PGTL" },
+        { name: "Price ($-$$$)", iso: "PLTG" },
+        { name: "Category (A-Z)", iso: "CAAZ" },
+        { name: "Category (Z-A)", iso: "CAZA" }
     ];
 
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare
@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
             homePage();
         }
         toggleCartPanel();
+        toggleDepartmentPanel();
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event
@@ -79,11 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML = `
             <h2>Home</h2>
         `;
-
-        const aside = document.querySelector(".department-Panel");
-        if (aside) {
-            aside.style.display = 'none';
-        }
     }
 
     // The browse page view
@@ -96,11 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <select id="sortType"></select>
             <div class="products-grid"></div>
         `;
-        const aside = document.querySelector(".department-Panel");
-        if (aside) {
-            aside.style.display = 'block';
-        }
-        const productsGrid = document.querySelector(".products-grid");
+
+        const contentWindow = document.querySelector(".products-grid");
         const sortingSelect = document.querySelector("#sortType");
         sortOptions(sorting);
         sortTypeSelectEvent();
@@ -124,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.innerHTML = "";
 
             for (let p of products) {
-                
+
                 const clone = template.content.cloneNode(true);
                 const picture = clone.querySelector(".product-img");
                 const img = document.createElement("img");
@@ -165,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
             blank.textContent = "Select a Sort Type";
             blank.value = "";
             list.appendChild(blank);
-            for (let s of sortList){
+            for (let s of sortList) {
                 const option = document.createElement('option');
                 option.textContent = s.name;
                 option.value = s.iso;
@@ -174,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // This function allows the creation of new items to go into the cart
-        function cartItem(id, name, price, quantity){
+        function cartItem(id, name, price, quantity) {
             this.id = id;
             this.name = name;
             this.price = price;
@@ -232,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 p.addEventListener('change', () => {
                     const filters = selectedFilters();
                     const filtered = filteredProducts(productsCache, filters);
-                    displayProducts(filtered, productsGrid);
+                    displayProducts(filtered, contentWindow);
                 });
             });
         }
@@ -334,8 +327,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const categories = Array.from(document.querySelectorAll(".filter-category:checked")).map(p => p.value);
             const sizes = Array.from(document.querySelectorAll(".filter-size:checked")).map(p => p.value);
             const colours = Array.from(document.querySelectorAll(".filter-colour:checked")).map(p => p.value);
-            
-            return {genders, categories, sizes, colours};
+
+            return { genders, categories, sizes, colours };
         }
 
         // This function takes the product list and applies the checkbox filters that were selected using filter() to return 
@@ -374,14 +367,11 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML = `
             <h2>About Us</h2>
         `;
-        
-        const aside = document.querySelector(".department-Panel");
-        if (aside) {
-            aside.style.display = 'none';
-        }
     }
-  
+
     function cartPage() {
+
+        toggleDepartmentPanel();
 
         const contentWindow = document.querySelector("#mainContent");
         const cartPanel = document.querySelector(".cart-panel");
@@ -406,6 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (hash == "cart") {
             cartPanelView.classList.remove("hidden");
+
         } else {
             cartPanelView.classList.add("hidden");
         }
@@ -465,5 +456,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return newItem
+    }
+
+    function toggleDepartmentPanel() {
+        const departmentPanelView = document.querySelector(".department-Panel");
+
+        let hash = window.location.hash.slice(1);
+
+        if (hash == "browse") {
+            departmentPanelView.style.display = "block";
+        } else {
+            departmentPanelView.style.display = "none";
+        }
+
     }
 });

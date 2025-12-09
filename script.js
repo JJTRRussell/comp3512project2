@@ -96,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="products-grid"></div>
         `;
 
+        // loads the products by calling for a promise
         loadProducts().then(products => {
             displayProducts(products, contentWindow);
         });
@@ -368,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     return false;
                 if (filters.categories.length > 0 && !filters.categories.includes(category))
                     return false;
-                // Because sizes and colours have many different choices, the some() function is used to check if
+                // Because sizes and colours are in arrays inside of an array and they have many different choices, the some() function is used to check if
                 // the product list has any of the sizes or colours the user has chosen
                 if (filters.sizes.length > 0) {
                     const tempSizes = p.sizes.map(s => s.toLowerCase());
@@ -390,6 +391,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function aboutPage() {
         content.innerHTML = `
             <h2>About Us</h2>
+            <div>
+                <br>
+                <p>
+                    This is the second assignment for COMP 3512 at MRU and it showcases building a website
+                    selling clothing utilizing JavaScript. It uses async and await to fetch data from
+                    an online API and saves it to localStorage. 
+                </p>
+                <br>
+                <p>
+                    The URL for the github repo is: https://github.com/JJTRRussell/comp3512project2
+                </p>
+                <br>
+                <p>
+                    This project was a collaboration between Brett BS and Joe R-R.
+                </p>
+            </div>
         `;
     }
 

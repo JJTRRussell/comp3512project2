@@ -1,3 +1,4 @@
+let productsCache = [];
 // This is the DOMContentLoaded event listener, ensuring nothing is done until the DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
     // This object groups the clothing categories so specific pictures will load for them
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // The main variables which will be referenced globally
     const content = document.querySelector("#mainContent");
     const template = document.querySelector(".products-template");
-    let productsCache = null;
+    // let productsCache = null;
     let shoppingCart = [];
     const cartItemCount = document.querySelector(".cart-count");
     const cartValueAmount = document.querySelector(".total-amount");
@@ -78,13 +79,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // The home page view
     function homePage() {
         content.innerHTML = `
-            <h2>Home</h2>
+        <h2>Welcome to Robinson-Russell & Swan Outfitters</h2>
+        <h3>Where Style and Affordability Lives</h3>
         `;
     }
 
     // The browse page view
     function browsePage() {
-        const clothingAPI = "./data-pretty.json";
+        // const clothingAPI = "./data-pretty.json";
+        const clothingAPI = "https://gist.githubusercontent.com/rconnolly/d37a491b50203d66d043c26f33dbd798/raw/37b5b68c527ddbe824eaed12073d266d5455432a/clothing-compact.json";
 
         content.innerHTML = `
             <h2>Browse Products</h2>
@@ -93,6 +96,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="products-grid"></div>
         `;
 
+        loadProducts().then(products => {
+            displayProducts(products, contentWindow);
+        });
         const contentWindow = document.querySelector(".products-grid");
         const sortingSelect = document.querySelector("#sortType");
         sortOptions(sorting);
@@ -100,16 +106,38 @@ document.addEventListener("DOMContentLoaded", () => {
         filterTypeSelectEvent();
 
         // This is the fetch call, it first looks for a saved cache, if none exists then it fetches the API data
-        if (productsCache) {
-            displayProducts(productsCache, contentWindow);
-        } else {
-            fetch(clothingAPI)
-                .then(response => response.json())
-                .then(data => {
-                    productsCache = data;
-                    displayProducts(data, contentWindow);
-                })
-                .catch(error => console.error(error));
+        // if (productsCache) {
+        //     displayProducts(productsCache, contentWindow);
+        // } else {
+        //     fetch(clothingAPI)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             productsCache = data;
+        //             displayProducts(data, contentWindow);
+        //         })
+        //         .catch(error => console.error(error));
+        // }
+
+        // This asynchronous function will return a promise. It checks to see if there is anything inside productsCache, 
+        // if products were saved then it converts it back into an array using JSON.parse() and saves it to local memory.
+        // If there is nothing in localStorage it will perform a fetch and saves it to localStorage using JSON.stringify(),
+        // and stores fetch in the global variable productsCache, then returns the full list. 
+        async function loadProducts() {
+            if (productsCache.length > 0) {
+                return productsCache;
+            }
+
+            const tempCache = localStorage.getItem("products");
+            if (tempCache) {
+                productsCache = JSON.parse(tempCache);
+                return productsCache;
+            }
+            
+            const response = await fetch(clothingAPI);
+            const products = await response.json();
+            productsCache = products;
+            localStorage.setItem("products", JSON.stringify(products));
+            return products;
         }
 
         // This function is where each product will be rendered and displayed using a template

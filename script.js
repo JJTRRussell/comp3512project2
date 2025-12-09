@@ -267,11 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCart();
         }
 
-        // This function removes all items from the cart
-        function clearCart() {
-            shoppingCart.length = 0;
-            updateCart();
-        }
+
 
         // This function re-renders and displays the products cart if an item was added or removed,
         // it first checks if there is nothing, if there is something then re-displays the products
@@ -371,8 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function cartPage() {
 
-        toggleDepartmentPanel();
-
         const contentWindow = document.querySelector("#mainContent");
         const cartPanel = document.querySelector(".cart-panel");
 
@@ -385,8 +379,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Generate new Cart Panel
         cartPanel.replaceChildren(generateCartPanel());
 
-        // Generate new Cart List Panel
-        contentWindow.replaceChildren(generateCartProductList());
+        // Fill out product list
+        generateCartProductList();
+
     }
 
     function toggleCartPanel() {
@@ -410,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Create Order Summary inpsired by Default Flowbite Shopping Cart
         // https://flowbite.com/blocks/e-commerce/shopping-cart/
         const template = document.querySelector(".order-summary-template");
-        const newSummary = template.content.cloneNode(true);
+        const clone = template.content.cloneNode(true);
 
         // Generate cart totals
         const totalPrice = calculateTotalCartPrice();
@@ -421,14 +416,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let totalTax = totalPrice * albertaTax;
 
-        newSummary.querySelector("#cart-total-amount").textContent = `$${totalPrice}`;
+        clone.querySelector("#cart-total-amount").textContent = `$${totalPrice}`;
 
-        newSummary.querySelector("#tax-amount").textContent = `$${totalTax.toFixed(2)}`;
+        clone.querySelector("#tax-amount").textContent = `$${totalTax.toFixed(2)}`;
 
-        newSummary.querySelector("#cart-final-price").textContent =
+        clone.querySelector("#cart-final-price").textContent =
             `$${(Number(totalPrice) + Number(totalTax)).toFixed(2)}`
 
-        return newSummary;
+        return clone;
     }
 
     function calculateTotalCartPrice() {
@@ -445,17 +440,30 @@ document.addEventListener("DOMContentLoaded", () => {
     function generateCartProductList() {
 
         const itemTemplate = document.querySelector(".cart-item-template");
-        const newItem = itemTemplate.content.cloneNode(true);
+
 
         // Empty Cart Check
         if (shoppingCart.length == 0) {
-            newItem.querySelector(".cart-item").innerHTML = `
-                <div class="empty-cart-msg text-center">
+            const clone = itemTemplate.content.cloneNode(true);
+            clone.querySelector(".cart-item-container").innerHTML = `
+                <div class="empty-cart-msg mx-auto">
                 <p>Your Cart is Empty.</p>
                 </div>`;
+            document.querySelector("#mainContent").appendChild(clone)
+        } else {
+            for (let item of shoppingCart) {
+                const clone = itemTemplate.content.cloneNode(true);
+
+                clone.querySelector(".product-name").textContent = item.name;
+                console.log(item.name)
+                clone.querySelector(".product-price").textContent = `$${item.price}`;
+                console.log(item.price)
+                clone.querySelector(".product-qty").textContent = item.quantity;
+                console.log(item.quantity)
+                document.querySelector("#mainContent").appendChild(clone);
+            }
         }
 
-        return newItem
     }
 
     function toggleDepartmentPanel() {
@@ -470,4 +478,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     }
+
+    // This function increases item QTY by 1
+    function incrememntItemQTY(e) { }
+
+    // This function decreases item QTY by 1 and removes it from cart if 0
+    function decrementItemQTY(e) { }
+
+    // This function removes all instances of the item from the cart
+    function removeItemFromCart(e) { }
+
+    // This function removes all items from the cart
+    function clearCart() {
+        shoppingCart.length = 0;
+        updateCart();
+    }
+
 });

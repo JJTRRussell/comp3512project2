@@ -31,7 +31,9 @@
     </header>
 
     <main class="col-start-2 col-span-5 grid grid-cols-subgrid gap-4 container">
-      <div id="mainContent" class="col-span-5"></div>
+      <div id="mainContent" class="col-span-5">
+
+      </div>
 
       <div class="cart-panel col-auto hidden">
         <div class="cart-header">
@@ -170,13 +172,36 @@
     </template>
 
     <template class="cart-item-template">
-      <section class="cart-item">
-        <div class="item-img"></div>
-        <div class="item-name"></div>
-        <div class="item-desc"></div>
-        <div class="item-price"></div>
-        <div class="item-count"><span>QTY: </span></div>
-        button
+      <section class="cart-item-container bg-white p-4 my-2 rounded-2xl shadow-md hover:shadow-lg transition flex gap-4">
+
+      <img src="https://via.placeholder.com/120" 
+       class="product-img w-28 h-28 rounded-xl object-cover" />
+
+      <div class="flex flex-col flex-1 justify-between">
+        <div>
+        <h3 class="product-name font-semibold text-xl">Product Name</h3>
+        <p class="product-price text-gray-500">$29.99</p>
+      </div>
+
+      <div class="flex items-center justify-between mt-3">
+        <!-- Quantity Buttons -->
+        <div class="flex items-center gap-2">
+
+          <button class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">
+            −
+          </button>
+          <span class="product-qty font-medium">1</span>
+          <button class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">
+            +
+          </button>
+        </div>
+
+        <!-- Remove Button -->
+        <button class="text-red-500 hover:text-red-600 font-medium">
+          Remove
+        </button>
+      </div>
+
       </section>
     </template>
 

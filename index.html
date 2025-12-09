@@ -12,14 +12,14 @@
     <title>Assignment 2: Single-Page App in JavaScript</title>
   </head>
 
-  <body class="grid grid-cols-7 gap-x-6">
+  <body class="grid grid-cols-7 gap-x-6 backdrop:bg-linear-90">
     <header class="col-span-full p-5 flex bg-white antialiased">
       <h1 class="grow">Robinson-Russell & Swan Outfitters</h1>
       <nav class="grow">
         <ul class="flex justify-between">
           <li><a href="#home" class="nav">Home</a></li>
           <li><a href="#browse" class="nav">Browse</a></li>
-          <li><a href="#about" class="nav">About</a></li>
+          <li><span class="nav hover:cursor-pointer" id="aboutus-nav">About Us</span></li>
           <li>
             <a href="#cart" class="nav">
               <span>Cart</span>
@@ -241,7 +241,26 @@
           <a href="" class="flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 ">Proceed to Checkout</a>     
     </template>
 
-
+    <dialog id="aboutus">
+      <h2>About Us</h2>
+      <div>
+        <br>
+        <p>
+          This is the second assignment for COMP 3512 at MRU and it showcases building a website
+          selling clothing utilizing JavaScript. It uses async and await to fetch data from
+          an online API and saves it to localStorage. 
+        </p>
+        <br>
+        <p>
+          The URL for the github repo is: https://github.com/JJTRRussell/comp3512project2
+        </p>
+        <br>
+        <p>
+          This project was a collaboration between Brett BS and Joe R-R.
+        </p>
+      </div>
+      <button type="button" autofocus class="text-black bg-brand box-border border border-black text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">Close</button>
+    </dialog>
 
     <script src="script.js"></script>
   </body>

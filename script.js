@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 productsCache = JSON.parse(tempCache);
                 return productsCache;
             }
-            
+
             const response = await fetch(clothingAPI);
             const products = await response.json();
             productsCache = products;

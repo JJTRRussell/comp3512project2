@@ -36,6 +36,7 @@
 
       </div>
 
+      <!-- TODO: Remove this legacy code after function refactor -->
       <div class="cart-panel col-auto hidden">
         <div class="cart-header">
           <h2>Order Summary</h2>
@@ -57,6 +58,16 @@
         </div>
       </div>
     </main>
+
+    <!-- TODO: Implement JavaScript functionality to populate productView -->
+    <div id="productView-container" class="hidden"></div>
+
+    <!-- TODO: Implement proper Single Product View page template -->
+    <template class="single-product-view-template">
+      <div id="product-view">
+
+      </div>
+    </template>
 
     <aside class="department-Panel hidden" id="departmentPanel">
       <div>
@@ -188,17 +199,17 @@
         <!-- Quantity Buttons -->
         <div class="flex items-center gap-2">
 
-          <button class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">
+          <button data-id="" data-name="" class="qty-decrease px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">
             −
           </button>
           <span class="product-qty font-medium">1</span>
-          <button class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">
+          <button data-id="" data-name="" class="qty-increase px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">
             +
           </button>
         </div>
 
         <!-- Remove Button -->
-        <button class="text-red-500 hover:text-red-600 font-medium">
+        <button class="remove-item text-red-500 hover:text-red-600 font-medium">
           Remove
         </button>
       </div>

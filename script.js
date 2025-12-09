@@ -300,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        // TODO: Refactor to updateCart() to remove unused legacy code
 
         // This function re-renders and displays the products cart if an item was added or removed,
         // it first checks if there is nothing, if there is something then re-displays the products
@@ -419,6 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    // This function toggles the display of the Order Summary Panel
     function toggleCartPanel() {
         const cartPanelView = document.querySelector(".cart-panel");
 
@@ -432,6 +434,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // This function creates the Order Summary panel that is displayed in
+    // Shopping Cart view
     function generateCartPanel() {
         // Select Cart Panel
         const cartPanelView = document.querySelector(".cart-panel");
@@ -472,10 +476,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return cartTotalPrice.toFixed(2);
     }
+
+    // TODO: Fix Shopping Cart add/remove functionality...
     function generateCartProductList() {
 
         const itemTemplate = document.querySelector(".cart-item-template");
-
 
         // Empty Cart Check
         if (shoppingCart.length == 0) {
@@ -490,17 +495,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 const clone = itemTemplate.content.cloneNode(true);
 
                 clone.querySelector(".product-name").textContent = item.name;
-                console.log(item.name)
                 clone.querySelector(".product-price").textContent = `$${item.price}`;
-                console.log(item.price)
                 clone.querySelector(".product-qty").textContent = item.quantity;
-                console.log(item.quantity)
+
+                const btnIncQTY = clone.querySelector(".qty-increase");
+                const btnDecQTY = clone.querySelector(".qty-decrease");
+
+                btnIncQTY.dataset.id = item.id
+                btnIncQTY.dataset.name = item.name
+                btnDecQTY.dataset.id = item.id
+                btnDecQTY.dataset.name = item.name
+
                 document.querySelector("#mainContent").appendChild(clone);
+
+                btnIncQTY.addEventListener("click", (e) => incrememntItemQTY);
+                btnDecQTY.addEventListener("click", (e) => decrementItemQTY);
             }
         }
 
     }
 
+    // This function toggles the display of the 
+    // Department Panel
     function toggleDepartmentPanel() {
         const departmentPanelView = document.querySelector(".department-Panel");
 
@@ -515,7 +531,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // This function increases item QTY by 1
-    function incrememntItemQTY(e) { }
+    function incrememntItemQTY(e) {
+
+        console.log("inside the incrememntItemQTY function")
+        addToCart(e);
+
+    }
 
     // This function decreases item QTY by 1 and removes it from cart if 0
     function decrementItemQTY(e) { }

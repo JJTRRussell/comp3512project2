@@ -51,9 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const webPages = {
         home: homePage,
         browse: browsePage,
-        about: aboutPage,
         cart: cartPage
     };
+
+    // This event listener adds the modal functionality to the AboutUs nav link
+    document.querySelector("#aboutus-nav").addEventListener("click", () =>
+        generateAboutUsModal());
 
     // https://www.artofcode.org/javascript-tutorial/how-to-build-single-page-applications-with-vanilla-javascript/
     // This is the website router which switches between the different views based on which URL hash address is clicked
@@ -387,29 +390,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // The about page view
-    function aboutPage() {
-        content.innerHTML = `
-            <h2>About Us</h2>
-            <div>
-                <br>
-                <p>
-                    This is the second assignment for COMP 3512 at MRU and it showcases building a website
-                    selling clothing utilizing JavaScript. It uses async and await to fetch data from
-                    an online API and saves it to localStorage. 
-                </p>
-                <br>
-                <p>
-                    The URL for the github repo is: https://github.com/JJTRRussell/comp3512project2
-                </p>
-                <br>
-                <p>
-                    This project was a collaboration between Brett BS and Joe R-R.
-                </p>
-            </div>
-        `;
+    // This function generates and displays the AboutUs modal window when clicked
+    function generateAboutUsModal() {
+        const dialog = document.querySelector("#aboutus");
+        const closeButton = document.querySelector("#aboutus button");
+        closeButton.addEventListener("click", () => { document.querySelector("#aboutus").close(); });
+        dialog.showModal();
     }
 
+    // This function clears the current window display and 
+    // displays basic shopping cart view
     function cartPage() {
 
         const contentWindow = document.querySelector("#mainContent");
